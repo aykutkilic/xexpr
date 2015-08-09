@@ -1,0 +1,248 @@
+package com.kilic.xexpr
+
+interface Expr {
+}
+
+// statements
+class AssignmentExpr extends Expr {
+	contains VariableRefLiteral assigned
+	contains Expr value	
+}
+
+class IfExpr extends Expr {
+	contains Expr ^if
+	contains Expr then
+	contains Expr ^else
+}
+
+class SwitchExpr extends Expr {
+	String param
+	contains Expr ^switch
+	contains CasePart [] cases
+	contains Expr ^default
+}
+
+class CasePart {
+	boolean fallThrough
+	String typeGuard
+	contains Expr ^case
+	contains Expr ^body	
+}
+
+class ForEachExpr extends Expr {
+	String param
+	contains Expr ^for
+	contains Expr body
+}
+
+class ForLoopExpr extends Expr {
+	contains Expr [] init
+	contains Expr predicate
+	contains Expr [] update
+	contains Expr body
+}
+
+class WhileExpr extends Expr {
+	contains Expr predicate
+	contains Expr body
+}
+
+class DoWhileExpr extends Expr {
+	contains Expr predicate
+	contains Expr body
+}
+
+class BlockExpr extends Expr {
+	contains Expr [] exprs
+}
+
+class VarDecl extends Expr {
+	boolean writeable
+	refers Type ^type
+	String name
+	contains Expr init
+}
+
+enum UnaryOperatorEnum {
+	LogicNot,
+	BinaryNot,
+	
+	Negation,
+	Positive,
+	
+	Increment,
+	Decrement
+}
+
+class UnaryOperation extends Expr {
+	UnaryOperatorEnum operator
+	contains Expr expr
+}
+
+enum BinaryOperatorEnum {
+	Assign,
+	
+	Add,
+	Sub,
+	Mul,
+	Div,
+	
+	IsEqual,
+	NotEqual,
+	Greater,
+	GreaterOrEqual,
+	Less,
+	LessOrEqual,
+	
+	LogicAnd,
+	LogicOr,
+	
+	BitwiseAnd,
+	BitwiseOr,
+	
+	ShiftRight,
+	ShiftLeft,
+	
+	Mod
+}
+
+class BinaryOperation extends Expr {
+	BinaryOperatorEnum operator
+	contains Expr left
+	contains Expr right
+}
+
+class CastedExpr extends Expr {
+	contains Expr target
+	refers Type ^type
+}
+
+class ClosureExpr extends Expr {
+	boolean explicitSyntax
+	String [] params
+	contains Expr body
+}
+
+class ReturnExpr extends Expr {
+	contains Expr expr	
+}
+
+
+class MemberFeatureCall extends Expr {
+	boolean nullSafe
+	boolean explicitStatic
+	boolean explicitOperationCall
+	refers  TypeWithName feature
+	
+	contains Expr target
+	contains Expr [] arguments
+}
+
+abstract class LiteralExpr extends Expr {
+}
+
+class StringLiteralExpr extends LiteralExpr {
+	String value
+}
+
+class NumberLiteralExpr extends LiteralExpr {
+	String value
+}
+
+class DecimalNumberLiteralExpr extends LiteralExpr {
+	double value
+}
+
+class BooleanLiteralExpr extends LiteralExpr {
+	boolean value	
+}
+
+class NullLiteralExpr extends LiteralExpr {	
+}
+
+class CallExpr extends Expr {
+	String functionName
+	contains Expr [] parameters
+}
+
+class ParenthesisExpr extends Expr {
+	contains Expr expr	
+}
+
+
+class MatrixExpr extends Expr {
+	derived int rowCount
+	derived int colCount
+	contains ListExpr [] rows
+}
+
+class ListExpr extends Expr {
+	contains Expr [] items
+}
+
+class VariableRefLiteral extends LiteralExpr {
+	refers VarDecl ^var
+}
+
+abstract class Type {}
+
+abstract class CoreType extends Type {}
+
+class NullType extends CoreType {}
+
+class BooleanType extends CoreType {}
+
+abstract class NumberType extends CoreType {}
+
+class IntegerType extends NumberType {}
+class RealType extends NumberType {}
+
+class BinaryType extends CoreType {
+	boolean signed
+	int sizeInBytes
+}
+
+class StringType extends CoreType {
+	int length
+}
+
+class PointerType extends CoreType {
+	contains Type pointedType	
+}
+
+class CompositeType extends Type {
+	String name
+	contains TypeWithName [] members
+}
+
+class TypeWithName extends Type {
+	String name
+	contains Type ^type
+}
+
+class ArrayType {
+	contains Multiplicity ^multiplicity
+	contains Type ^type
+}
+
+class FunctionType extends Type {
+	contains Type ^return
+	contains Type[] params
+}
+
+enum MultiplicityTypeEnum {
+	One,
+	Optional,
+	OneOrMore,
+	Any,
+	Fixed,
+	Range,
+	Dynamic
+}
+
+class Multiplicity {
+	MultiplicityTypeEnum ^type
+	
+	int countMin
+	int countMax
+}

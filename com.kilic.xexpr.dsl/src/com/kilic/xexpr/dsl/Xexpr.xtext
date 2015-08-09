@@ -1,0 +1,225 @@
+grammar com.kilic.xexpr.dsl.Xexpr with org.eclipse.xtext.common.Terminals
+
+import "com.kilic.xexpr"
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Expr returns Expr:
+	AssignmentExpr
+;
+
+AssignmentExpr returns Expr:
+	{AssignmentExpr} (assigned=VariableRefLiteral '=' value=Expr)
+	| OrExpr
+;
+
+OrExpr returns Expr:
+	AndExpr (=>({BinaryOperation.left=current} operator=OpLogicOr) right=AndExpr )*
+;
+
+enum OpLogicOr returns BinaryOperatorEnum: LogicOr='||';
+
+AndExpr returns Expr:
+	EqualityExpr (=>({BinaryOperation.left=current} operator=OpLogicAnd) right=AndExpr )*
+;
+
+enum OpLogicAnd returns BinaryOperatorEnum: LogicAnd='&&';
+
+EqualityExpr returns Expr:
+	ComparisonExpr (=>({BinaryOperation.left=current} operator=OpEquality) right=ComparisonExpr )*
+;
+
+enum OpEquality returns BinaryOperatorEnum: IsEqual='=='| NotEqual='!=';
+
+ComparisonExpr returns Expr:
+	OtherOpExpr (=>({BinaryOperation.left=current} operator=OpCompare) right=OtherOpExpr )* 
+;
+
+enum OpCompare returns BinaryOperatorEnum: GreaterOrEqual='>=' | LessOrEqual='<=' | Greater= '>' | Less='<' ;
+
+OtherOpExpr returns Expr:
+	AdditiveExpr (=>({BinaryOperation.left=current} OpOther) right=AdditiveExpr )*
+;
+
+OpOther: '->' | '..<' | '>' '..' | '..' | '=>' | '>' (=>('>' '>') | '>') | '<' (=>('<' '<') | '<' | '=>')
+	| '<>' | '?:';
+
+
+AdditiveExpr returns Expr:
+	MultiplicativeExpr (=>({BinaryOperation.left=current} operator=OpAdd) right=MultiplicativeExpr )*	
+;
+	
+enum OpAdd returns BinaryOperatorEnum:  Add='+' | Sub='-';
+
+MultiplicativeExpr returns Expr:
+	UnaryOpExpr (=>({BinaryOperation.left=current} operator=OpMul) right=MultiplicativeExpr )*
+;
+
+enum OpMul returns BinaryOperatorEnum: Mul='*' | Div='/' | Mod='%';
+
+UnaryOpExpr returns Expr:
+	{UnaryOperation} operator=OpUnary expr=UnaryOpExpr
+	| CastedExpr
+;
+
+enum OpUnary returns UnaryOperatorEnum: LogicNot="!" | Negation="-" | Positive="+";
+
+CastedExpr returns Expr:
+	PostfixOpExpr (=>({CastedExpr.target=current} 'as') type=[Type|QualifiedName] )*
+;
+
+PostfixOpExpr returns Expr:
+	MemberFeatureCall =>({UnaryOperation.expr=current} operator=OpPostfix)?
+;
+
+enum OpPostfix returns UnaryOperatorEnum: Increment="++" | Decrement="--";
+
+MemberFeatureCall returns Expr:
+	PrimaryExpr
+	(=>( {MemberFeatureCall.target=current} ("."|nullSafe?="?."|explicitStatic?="::")  )
+		feature=[TypeWithName|ID]
+		(=>explicitOperationCall?='(' 
+			( arguments += Expr (',' arguments+=Expr)* )? 
+		')')?
+	)*
+;
+
+PrimaryExpr returns Expr:
+	BlockExpr |
+	SwitchExpr |
+	Literal |
+	IfExpr |
+	ForEachExpr |
+	ForLoopExpr |
+	WhileExpr |
+	DoWhileExpr |
+	ReturnExpr |
+	ParenthesisExpr	
+;
+
+Literal returns Expr:
+	CollectionLiteral |
+	Closure |
+	BooleanLiteral |
+	NumberLiteral |
+	NullLiteral |
+	StringLiteral |
+	VariableRefLiteral |
+	LiteralExtension;
+
+LiteralExtension hidden(): '##LiteralExtensionDoNotMatch##';
+
+CollectionLiteral returns Expr:
+	MatrixLiteral
+;
+
+MatrixLiteral returns Expr:
+	{MatrixExpr} (=>'#[' rows+=MatrixRow (';' rows+=MatrixRow )* ']' )
+;
+
+MatrixRow returns ListExpr:
+	{ListExpr}items+=Expr (',' items+=Expr)*	
+;
+
+Closure returns Expr:
+	=>({ClosureExpr} '[') 
+		=>((params+=ID (',' params+=ID)*)? explicitSyntax?='|')? 
+		body=Expr 
+	']'
+;
+
+ShortClosure returns Expr:
+	=>({ClosureExpr} (params+=ID (',' params+=ID)*)? explicitSyntax?='|') body=Expr;
+	
+	
+ParenthesisExpr returns Expr:
+	'(' Expr ')';
+
+
+IfExpr returns Expr:
+	{IfExpr}
+	'if' '(' if=Expr ')'
+	then=Expr
+	(=>'else' else=Expr)?;
+
+SwitchExpr returns Expr:
+	{SwitchExpr}
+	'switch' (=>'(' param=ID ':' ) switch=Expr ')' '{'
+	(cases+=CasePart)*
+	('default' ':' default=Expr )?
+	'}';
+
+CasePart:
+	{CasePart}
+	typeGuard=ID? ('case' case=Expr)? 
+		(':' body=Expr | fallThrough?=',') ;
+
+ForEachExpr returns Expr:
+	=>({ForEachExpr}
+	'for' '(' param=ID ':') for=Expr ')'
+		body=Expr;
+
+ForLoopExpr returns Expr:
+	{ForLoopExpr}
+	'for' '('(init+=ExprOrVarDecl (',' init+=ExprOrVarDecl)*)? ';' 
+		predicate=Expr? ';' 
+		(update+=Expr (',' update+=Expr)*)? ')'
+		body=Expr;
+
+WhileExpr returns Expr:
+	{WhileExpr}
+	'while' '(' predicate=Expr ')'
+		body=Expr;
+	
+DoWhileExpr returns Expr:
+	{DoWhileExpr}
+   'do'
+       body=Expr
+   'while' '(' predicate=Expr ')';
+
+BlockExpr returns Expr: 
+	{BlockExpr}
+	'{'
+		(exprs+=ExprOrVarDecl ';'?)*
+	'}';
+
+ExprOrVarDecl returns Expr:
+	VarDecl | Expr;
+
+VarDecl returns Expr:
+	{VarDecl}
+	(writeable?='var'|'val') (=>(type=[Type|ID] name=ID) | name=ID) ('=' init=Expr)?;
+
+	
+BooleanLiteral returns Expr :
+	{BooleanLiteralExpr} ('false' | value?='true');
+
+NullLiteral returns Expr :
+	{NullLiteralExpr} 'null';
+
+NumberLiteral returns Expr:
+	{NumberLiteralExpr} value = Number;
+
+StringLiteral returns Expr:
+	{StringLiteralExpr} value=STRING;
+
+VariableRefLiteral returns VariableRefLiteral:
+	{VariableRefLiteral} var=[VarDecl|ID];
+
+ReturnExpr returns Expr:
+	{ReturnExpr} 'return' (->expr=Expr)?;
+
+QualifiedName: ID (=>'.' ID)*;
+
+Number hidden(): HEX | (INT | DECIMAL) ('.' (INT | DECIMAL))?;
+
+terminal HEX:
+	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F'|'_')+ 
+	('#' (('b'|'B')('i'|'I') | ('l'|'L')))?;
+	
+terminal INT returns ecore::EInt:
+	'0'..'9' ('0'..'9'|'_')*; 
+
+terminal DECIMAL:
+	INT 
+	(('e'|'E') ('+'|'-')? INT)? 
+	(('b'|'B')('i'|'I'|'d'|'D') | ('l'|'L'|'d'|'D'|'f'|'F'))?;

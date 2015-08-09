@@ -1,0 +1,141 @@
+import com.kilic.xexpr.Expr
+import com.kilic.xexpr.Multiplicity
+import com.kilic.xexpr.Type
+
+import com.kilic.xexpr.CastedExpr
+import com.kilic.xexpr.BinaryOperation
+import com.kilic.xexpr.BooleanLiteralExpr
+import com.kilic.xexpr.NumberLiteralExpr
+import com.kilic.xexpr.StringLiteralExpr
+import com.kilic.xexpr.UnaryOperation
+import com.kilic.xexpr.VarDecl
+import com.kilic.xexpr.VariableRefLiteral
+import com.kilic.xexpr.ClosureExpr
+
+import com.kilic.xexpr.MemberFeatureCall
+import com.kilic.xexpr.ReturnExpr
+import com.kilic.xexpr.NullLiteralExpr
+
+import com.kilic.xexpr.XexprFactory
+
+import com.kilic.xexpr.BooleanType
+import com.kilic.xexpr.StringType
+import com.kilic.xexpr.NumberType
+
+system com.kilic.xexpr.semantics.XexprSemantics
+
+inject XexprUtils utils
+
+judgments {
+	type |- Expr e : output Type
+		error "Cannot Type" source e
+		
+	expect |> Expr e : Type t
+		error "Expected " + t source e
+	
+	subtype |- Type t1 <: Type t2
+		error "Type mismatch "
+	
+	count ||- Expr e : output Integer
+		error "Cannot count" source e
+		
+	expectCount ||> Expr e : Type t
+		error "Expected # " + t source e
+		
+	multiplicity ||- Integer i <: Multiplicity m
+		error "Count mismatch " + i + "<:" + m.stringRep
+}
+
+axiom TNull    G |- NullLiteralExpr    e : XexprFactory::eINSTANCE.createNullType
+axiom TString  G |- StringLiteralExpr  e : XexprFactory::eINSTANCE.createStringType
+axiom TInteger G |- NumberLiteralExpr  e : utils.createNumberType(e.value)
+axiom TBoolean G |- BooleanLiteralExpr e : XexprFactory::eINSTANCE.createBooleanType
+axiom TCasted  G |- CastedExpr         e : e.type
+
+axiom SNumToNum   G |- NumberType t1 <: NumberType t2
+axiom SBoolToNum  G |- NumberType t1 <: BooleanType t2
+
+rule SSameType 
+	G |- Type t1 <: Type t2
+from {
+	t1.class == t2.class
+}
+
+rule TBinaryOp
+	G |- BinaryOperation e : Type t 
+from {
+	switch( e.operator ) {
+		/*case ASSIGN:
+			{G |- e.right : t}*/
+		case IS_EQUAL,
+		case NOT_EQUAL,
+		case GREATER,
+		case GREATER_OR_EQUAL,
+		case LESS,
+		case LESS_OR_EQUAL,
+	
+		case LOGIC_AND,
+		case LOGIC_OR:
+			t = XexprFactory::eINSTANCE.createBooleanType
+		
+		default: {
+			var Type left
+			var Type right
+			{G |- e.left  : left}
+			{G |- e.right : right}
+			{G |- left <: right}
+			t = left
+		}
+	}
+}
+
+rule TUnaryOp
+	G |- UnaryOperation e : Type t
+from {
+	switch(e.operator) {
+		case LOGIC_NOT:
+			// check integer or bool
+			t = XexprFactory::eINSTANCE.createBooleanType
+		
+		case BINARY_NOT,
+		case NEGATION,
+		case POSITIVE,	
+		case INCREMENT,
+		case DECREMENT:
+			// expect integer
+			{ G |- e.expr : t }
+	}
+}
+
+rule TVariableRef
+	G |- VariableRefLiteral e : Type t
+from {
+	{ G |- e.^var : t }
+}
+
+rule TVarDecl
+	G |- VarDecl e : Type t
+from {
+	if( e.type != null ) { 
+		t = e.type // expect init
+	} else if(e.init != null) {
+		{ G |- e.init : t }
+	}
+}
+rule TMember  
+	G |- MemberFeatureCall  e : Type t 
+from {
+	t = e.^feature.getType // multiplicity not checked
+}
+
+rule TClosure
+	G |- ClosureExpr e : Type t
+from {
+	G |- e.body : t
+}
+
+rule TReturn
+	G |- ReturnExpr e : Type t
+from {
+	G |- e.expr : t
+}

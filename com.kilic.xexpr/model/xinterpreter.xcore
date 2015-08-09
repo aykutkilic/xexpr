@@ -1,0 +1,18 @@
+package com.kilic.xinterpreter
+
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EObject
+
+class CallStack {
+	contains CallStackEntry global
+	contains CallStackEntry [] callStack
+}
+
+class CallStackEntry {
+	contains VarInstance[] vars
+}
+
+class VarInstance {
+	refers EClass ^type
+	contains EObject value
+}
