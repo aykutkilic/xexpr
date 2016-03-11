@@ -26,7 +26,6 @@ import com.kilic.xexpr.MatrixExpr
 import com.kilic.xexpr.ListExpr
 import com.kilic.xexpr.VariableRefLiteral
 import com.kilic.xexpr.UnaryOperatorEnum
-import com.kilic.xexpr.semantics.XexprSemantics
 import com.kilic.xexpr.Expr
 import com.kilic.xexpr.BinaryOperatorEnum
 import com.kilic.xexpr.StringType
@@ -37,10 +36,11 @@ import com.kilic.xexpr.CompositeType
 import com.kilic.xexpr.BooleanType
 import com.kilic.xexpr.IntegerType
 import com.kilic.xexpr.RealType
+import com.kilic.xexpr.semantics.Types
 
 class Interpreter {
 	@Inject
-  	protected XexprSemantics semantics;
+  	protected Types types;
 	
 	var CallStack callStack
 	
@@ -69,7 +69,7 @@ class Interpreter {
 	}
 	
 	def dispatch eval(ForEachExpr expr) {
-				
+		
 	}
 	
 	def dispatch eval(ForLoopExpr expr) {
@@ -186,14 +186,14 @@ class Interpreter {
 	
 	def opAssign(Expr left, Expr right) {
 		if(left instanceof VariableRefLiteral) {
-			var r = semantics.type(right)
+			var r = types.type(right)
 		}
 		throw new Exception("Error: lvalue must be variable")
 	}
 	
 	def opAdd(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -249,8 +249,8 @@ class Interpreter {
 	}
 	
 	def opSub(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -285,8 +285,8 @@ class Interpreter {
 	}
 	
 	def opMul(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -303,8 +303,8 @@ class Interpreter {
 	}
 	
 	def opDiv(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -333,8 +333,8 @@ class Interpreter {
 	}
 	
 	def opBitwiseAnd(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -351,8 +351,8 @@ class Interpreter {
 	}
 	
 	def opBitwiseOr(Expr left, Expr right) {
-				var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+				var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -369,8 +369,8 @@ class Interpreter {
 	}
 	
 	def opShiftRight(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -387,8 +387,8 @@ class Interpreter {
 	}
 	
 	def opShiftLeft(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -405,8 +405,8 @@ class Interpreter {
 	}
 	
 	def opMod(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -434,8 +434,8 @@ class Interpreter {
 	}
 	
 	def opIsEqual(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -464,8 +464,8 @@ class Interpreter {
 	}
 	
 	def opNotEqual(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 		
 		try {
 			return !opIsEqual(left,right)
@@ -475,8 +475,8 @@ class Interpreter {
 	}
 	
 	def opGreater(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -499,8 +499,8 @@ class Interpreter {
 	}
 	
 	def opLess(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -523,8 +523,8 @@ class Interpreter {
 	}
 	
 	def opGreaterOrEqual(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 		
 		try {
 			return !opLess(left,right)
@@ -534,8 +534,8 @@ class Interpreter {
 	}
 	
 	def opLessOrEqual(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 		
 		try {
 			return !opGreater(left,right)
@@ -545,8 +545,8 @@ class Interpreter {
 	}
 
 	def opLogicAnd(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -563,8 +563,8 @@ class Interpreter {
 	}
 	
 	def opLogicOr(Expr left, Expr right) {
-		var ltype = semantics.type(left).first
-		var rtype = semantics.type(right).first
+		var ltype = types.type(left).first
+		var rtype = types.type(right).first
 
 		var lval = left.eval
 		var rval = right.eval
@@ -608,7 +608,7 @@ class Interpreter {
 	}
 	
 	def dispatch eval(NumberLiteralExpr expr) {
-		var type = semantics.type(expr).value
+		var type = types.type(expr).value
 		switch(type) {
 			IntegerType: return Integer.parseInt(expr.value)
 			RealType: return Double.parseDouble(expr.value)
@@ -618,7 +618,6 @@ class Interpreter {
 	}
 	
 	def dispatch eval(BooleanLiteralExpr expr) {
-		
 	}
 	
 	def dispatch eval(NullLiteralExpr expr) {
