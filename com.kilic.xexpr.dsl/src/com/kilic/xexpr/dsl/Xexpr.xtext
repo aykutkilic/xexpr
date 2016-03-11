@@ -76,7 +76,7 @@ enum OpPostfix returns UnaryOperatorEnum: Increment="++" | Decrement="--";
 MemberFeatureCall returns Expr:
 	PrimaryExpr
 	(=>( {MemberFeatureCall.target=current} ("."|nullSafe?="?."|explicitStatic?="::")  )
-		feature=[TypeWithName|ID]
+		feature=[MemberElement|ID]
 		(=>explicitOperationCall?='(' 
 			( arguments += Expr (',' arguments+=Expr)* )? 
 		')')?
