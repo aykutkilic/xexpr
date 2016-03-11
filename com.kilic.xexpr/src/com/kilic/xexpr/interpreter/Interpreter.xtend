@@ -239,7 +239,7 @@ class Interpreter {
 			PointerType:
 				switch(rtype) {
 					BinaryType, NumberType:
-						return (lval as Integer) + sizeof(ltype.pointedType) * (rval as Integer)
+						return (lval as Integer) + sizeof(ltype.getMemoryLayout) * (rval as Integer)
 				}
 		}
 		
@@ -277,7 +277,7 @@ class Interpreter {
 			PointerType:
 				switch(rtype) {
 					BinaryType, IntegerType:
-						return (lval as Integer) - sizeof(ltype.pointedType) * (rval as Integer)
+						return (lval as Integer) - sizeof(ltype.getMemoryLayout) * (rval as Integer)
 				}
 		}
 		

@@ -192,24 +192,13 @@ abstract class CoreType extends Type {}
 
 class NullType extends CoreType {}
 class BooleanType extends CoreType {}
-
-abstract class NumberType extends CoreType {}
-
-class IntegerType extends NumberType {}
-class RealType extends NumberType {}
-
-class BinaryType extends CoreType {
-	boolean signed
-	int sizeInBytes
-}
-
 class StringType extends CoreType {
 	int length
 }
 
-class PointerType extends CoreType {
-	contains Type pointedType	
-}
+abstract class NumberType extends CoreType {}
+class IntegerType extends NumberType {}
+class RealType extends NumberType {}
 
 class CompositeType extends Type {
 	String name
@@ -246,4 +235,18 @@ class Multiplicity {
 	
 	int countMin
 	int countMax
+}
+
+
+// linker scripts / endianness / volatility / etc.
+class MemoryLayout {
+}
+
+class BinaryType extends CoreType {
+	boolean signed
+	int sizeInBytes
+}
+
+class PointerType extends CoreType {
+	refers MemoryLayout memoryLayout	
 }
