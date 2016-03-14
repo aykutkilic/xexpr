@@ -132,7 +132,7 @@ class MemberFeatureCall extends Expr {
 	boolean nullSafe
 	boolean explicitStatic
 	boolean explicitOperationCall
-	refers  MemberElement feature
+	refers  Attribute feature
 	
 	contains Expr target
 	contains Expr [] arguments
@@ -202,10 +202,10 @@ class RealType extends NumberType {}
 
 class CompositeType extends Type {
 	String name
-	contains MemberElement [] members
+	contains Attribute [] attributes
 }
 
-class MemberElement extends Type {
+class Attribute extends Type {
 	String name
 	contains Type ^type
 }
