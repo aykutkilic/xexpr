@@ -1,0 +1,6 @@
+package com.kilic.xphysical
+
+class Unit {
+	String name
+	// exponents here.
+}

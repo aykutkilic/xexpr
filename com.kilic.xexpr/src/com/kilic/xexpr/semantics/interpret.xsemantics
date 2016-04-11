@@ -1,0 +1,10 @@
+import com.kilic.xexpr.Expr
+
+system com.kilic.xexpr.semantics.Interpret
+
+inject XexprUtils utils
+
+judgments {
+	interpret ||~ Expr e : output Integer
+		error "Cannot count" source e
+}

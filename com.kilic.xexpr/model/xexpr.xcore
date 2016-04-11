@@ -132,7 +132,7 @@ class MemberFeatureCall extends Expr {
 	boolean nullSafe
 	boolean explicitStatic
 	boolean explicitOperationCall
-	refers  TypeWithName feature
+	refers  Attribute feature
 	
 	contains Expr target
 	contains Expr [] arguments
@@ -189,45 +189,33 @@ abstract class Type {}
 abstract class CoreType extends Type {}
 
 class NullType extends CoreType {}
-
 class BooleanType extends CoreType {}
-
-abstract class NumberType extends CoreType {}
-
-class IntegerType extends NumberType {}
-class RealType extends NumberType {}
-
-class BinaryType extends CoreType {
-	boolean signed
-	int sizeInBytes
-}
-
 class StringType extends CoreType {
 	int length
 }
 
-class PointerType extends CoreType {
-	contains Type pointedType	
-}
+abstract class NumberType extends CoreType {}
+class IntegerType extends NumberType {}
+class RealType extends NumberType {}
 
 class CompositeType extends Type {
 	String name
-	contains TypeWithName [] members
+	contains Attribute [] attributes
 }
 
-class TypeWithName extends Type {
+class Attribute extends Type {
 	String name
-	contains Type ^type
-}
-
-class ArrayType {
-	contains Multiplicity ^multiplicity
 	contains Type ^type
 }
 
 class FunctionType extends Type {
 	contains Type ^return
 	contains Type[] params
+}
+
+class CollectionType {
+	contains Multiplicity ^multiplicity
+	contains Type ^type
 }
 
 enum MultiplicityTypeEnum {

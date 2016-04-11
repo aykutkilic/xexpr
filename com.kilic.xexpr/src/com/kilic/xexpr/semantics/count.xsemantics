@@ -1,0 +1,18 @@
+import com.kilic.xexpr.Expr
+import com.kilic.xexpr.Multiplicity
+import com.kilic.xexpr.Type
+
+system com.kilic.xexpr.semantics.Count
+
+inject XexprUtils utils
+
+judgments {
+	count ||- Expr e : output Integer
+		error "Cannot count" source e
+		
+	expectCount ||> Expr e : Type t
+		error "Expected # " + t source e
+		
+	multiplicity ||- Integer i <: Multiplicity m
+		error "Count mismatch " + i + "<:" + m.stringRep
+}
