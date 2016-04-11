@@ -39,8 +39,7 @@ import com.kilic.xexpr.RealType
 import com.kilic.xexpr.semantics.Types
 
 class Interpreter {
-	@Inject
-  	protected Types types;
+	@Inject protected Types types;
 	
 	var CallStack callStack
 	
@@ -621,23 +620,18 @@ class Interpreter {
 	}
 	
 	def dispatch eval(NullLiteralExpr expr) {
-		
 	}
 	
 	def dispatch eval(CallExpr expr) {
-		
 	}
 	
 	def dispatch eval(MatrixExpr expr) {
-		
 	}
 	
 	def dispatch eval(ListExpr expr) {
-		
 	}
 	
 	def dispatch eval(VariableRefLiteral expr) {
-		
 	}
 	
 	def dispatch int sizeof(CompositeType t) {

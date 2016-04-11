@@ -22,4 +22,20 @@
             genModel="model/xinterpreter.xcore"/>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated xdigital -->
+      <package
+            uri="com.kilic.xdigital"
+            class="com.kilic.xdigital.XdigitalPackage"
+            genModel="model/xdigital.xcore"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated xphysical -->
+      <package
+            uri="com.kilic.xphysical"
+            class="com.kilic.xphysical.XphysicalPackage"
+            genModel="model/xphysical.xcore"/>
+   </extension>
+
 </plugin>
