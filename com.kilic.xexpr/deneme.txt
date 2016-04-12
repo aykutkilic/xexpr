@@ -24,7 +24,7 @@ type moreThan4 {
 if(a>5)
 	x=12
 else
-	x=2+<a>+moreVars()
+	x=2+a+moreVars()
 	
 
 struct s {
