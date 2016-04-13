@@ -1,75 +1,63 @@
 grammar com.kilic.xexpr.dsl.Xexpr with org.eclipse.xtext.common.Terminals
 
 import "com.kilic.xexpr"
+import "com.kilic.xtype"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 Expr returns Expr:
-	AssignmentExpr
-;
+	AssignmentExpr;
 
 AssignmentExpr returns Expr:
 	{AssignmentExpr} (assigned=VariableRefLiteral '=' value=Expr)
-	| OrExpr
-;
+	| OrExpr;
 
 OrExpr returns Expr:
-	AndExpr (=>({BinaryOperation.left=current} operator=OpLogicOr) right=AndExpr )*
-;
+	AndExpr (=>({BinaryOperation.left=current} operator=OpLogicOr) right=AndExpr )*;
 
 enum OpLogicOr returns BinaryOperatorEnum: LogicOr='||';
 
 AndExpr returns Expr:
-	EqualityExpr (=>({BinaryOperation.left=current} operator=OpLogicAnd) right=AndExpr )*
-;
+	EqualityExpr (=>({BinaryOperation.left=current} operator=OpLogicAnd) right=AndExpr )*;
 
 enum OpLogicAnd returns BinaryOperatorEnum: LogicAnd='&&';
 
 EqualityExpr returns Expr:
-	ComparisonExpr (=>({BinaryOperation.left=current} operator=OpEquality) right=ComparisonExpr )*
-;
+	ComparisonExpr (=>({BinaryOperation.left=current} operator=OpEquality) right=ComparisonExpr )*;
 
 enum OpEquality returns BinaryOperatorEnum: IsEqual='=='| NotEqual='!=';
 
 ComparisonExpr returns Expr:
-	OtherOpExpr (=>({BinaryOperation.left=current} operator=OpCompare) right=OtherOpExpr )* 
-;
+	OtherOpExpr (=>({BinaryOperation.left=current} operator=OpCompare) right=OtherOpExpr )*;
 
 enum OpCompare returns BinaryOperatorEnum: GreaterOrEqual='>=' | LessOrEqual='<=' | Greater= '>' | Less='<' ;
 
 OtherOpExpr returns Expr:
-	AdditiveExpr (=>({BinaryOperation.left=current} OpOther) right=AdditiveExpr )*
-;
+	AdditiveExpr (=>({BinaryOperation.left=current} OpOther) right=AdditiveExpr )*;
 
 OpOther: '->' | '..<' | '>' '..' | '..' | '=>' | '>' (=>('>' '>') | '>') | '<' (=>('<' '<') | '<' | '=>')
 	| '<>' | '?:';
 
-
 AdditiveExpr returns Expr:
-	MultiplicativeExpr (=>({BinaryOperation.left=current} operator=OpAdd) right=MultiplicativeExpr )*	
-;
+	MultiplicativeExpr (=>({BinaryOperation.left=current} operator=OpAdd) right=MultiplicativeExpr )*;
 	
 enum OpAdd returns BinaryOperatorEnum:  Add='+' | Sub='-';
 
 MultiplicativeExpr returns Expr:
-	UnaryOpExpr (=>({BinaryOperation.left=current} operator=OpMul) right=MultiplicativeExpr )*
-;
+	UnaryOpExpr (=>({BinaryOperation.left=current} operator=OpMul) right=MultiplicativeExpr )*;
 
 enum OpMul returns BinaryOperatorEnum: Mul='*' | Div='/' | Mod='%';
 
 UnaryOpExpr returns Expr:
 	{UnaryOperation} operator=OpUnary expr=UnaryOpExpr
-	| CastedExpr
-;
+	| CastedExpr;
 
 enum OpUnary returns UnaryOperatorEnum: LogicNot="!" | Negation="-" | Positive="+";
 
 CastedExpr returns Expr:
-	PostfixOpExpr (=>({CastedExpr.target=current} 'as') type=[Type|QualifiedName] )*
-;
+	PostfixOpExpr (=>({CastedExpr.target=current} 'as') type=[Type|QualifiedName] )*;
 
 PostfixOpExpr returns Expr:
-	MemberFeatureCall =>({UnaryOperation.expr=current} operator=OpPostfix)?
-;
+	MemberFeatureCall =>({UnaryOperation.expr=current} operator=OpPostfix)?;
 
 enum OpPostfix returns UnaryOperatorEnum: Increment="++" | Decrement="--";
 
@@ -86,7 +74,7 @@ MemberFeatureCall returns Expr:
 PrimaryExpr returns Expr:
 	BlockExpr |
 	SwitchExpr |
-	Literal |
+	LiteralExpr |
 	IfExpr |
 	ForEachExpr |
 	ForLoopExpr |
@@ -96,7 +84,7 @@ PrimaryExpr returns Expr:
 	ParenthesisExpr	
 ;
 
-Literal returns Expr:
+LiteralExpr returns Expr:
 	CollectionLiteral |
 	Closure |
 	BooleanLiteral |
@@ -104,32 +92,27 @@ Literal returns Expr:
 	NullLiteral |
 	StringLiteral |
 	VariableRefLiteral |
-	LiteralExtension;
-
-LiteralExtension hidden(): '##LiteralExtensionDoNotMatch##';
+	ListLiteral |
+	StructLiteralExpr
+;
 
 CollectionLiteral returns Expr:
-	MatrixLiteral
-;
+	MatrixLiteral;
 
 MatrixLiteral returns Expr:
-	{MatrixExpr} (=>'#[' rows+=MatrixRow (';' rows+=MatrixRow )* ']' )
-;
+	{MatrixExpr} (=>'#[' rows+=MatrixRow (';' rows+=MatrixRow )* ']' );
 
 MatrixRow returns ListExpr:
-	{ListExpr}items+=Expr (',' items+=Expr)*	
-;
+	{ListExpr}items+=Expr (',' items+=Expr)*;
 
 Closure returns Expr:
 	=>({ClosureExpr} '[') 
 		=>((params+=ID (',' params+=ID)*)? explicitSyntax?='|')? 
 		body=Expr 
-	']'
-;
+	']';
 
 ShortClosure returns Expr:
 	=>({ClosureExpr} (params+=ID (',' params+=ID)*)? explicitSyntax?='|') body=Expr;
-	
 	
 ParenthesisExpr returns Expr:
 	'(' Expr ')';
@@ -151,7 +134,7 @@ SwitchExpr returns Expr:
 CasePart:
 	{CasePart}
 	typeGuard=ID? ('case' case=Expr)? 
-		(':' body=Expr | fallThrough?=',') ;
+		(':' body=Expr | fallThrough?=',');
 
 ForEachExpr returns Expr:
 	=>({ForEachExpr}
@@ -205,8 +188,27 @@ StringLiteral returns Expr:
 VariableRefLiteral returns VariableRefLiteral:
 	{VariableRefLiteral} var=[VarDecl|ID];
 
+ListLiteral returns Expr:
+	{ListExpr}'[' items+=Expr* ']';
+	
+StructLiteralExpr returns Expr:
+	{StructLiteralExpr}'{'
+		attrValues+=AttributeAssignmentExpr*
+	'}';
+
+AttributeAssignmentExpr:
+	(attribute=[Attribute|ID] '=')? value=LiteralExpr;
+
 ReturnExpr returns Expr:
 	{ReturnExpr} 'return' (->expr=Expr)?;
+
+CompositeType:
+	'struct' name=ID '{'
+		attributes+=Attribute
+	'}';
+
+Attribute:
+	type=[Type|ID] name=ID;
 
 QualifiedName: ID (=>'.' ID)*;
 

@@ -1,0 +1,66 @@
+package com.kilic.xtype
+
+import com.kilic.xexpr.Expr
+import com.kilic.xexpr.LiteralExpr
+
+abstract class Type {}
+
+abstract class CoreType extends Type {}
+
+class NullType extends CoreType {}
+class BooleanType extends CoreType {}
+class StringType extends CoreType {
+	int length
+}
+
+abstract class NumberType extends CoreType {}
+
+class IntegerType extends NumberType {}
+class RealType extends NumberType {}
+
+class CompositeType extends Type {
+	String name
+	contains Attribute [] attributes
+}
+
+class Attribute extends Type {
+	String name
+	refers Type ^type
+}
+
+class FunctionType extends Type {
+	refers Type ^return
+	refers Type[] params
+}
+
+class CollectionType {
+	contains Multiplicity ^multiplicity
+	contains Type ^type
+}
+
+enum MultiplicityTypeEnum {
+	One,
+	Optional,
+	OneOrMore,
+	Any,
+	Fixed,
+	Range,
+	Dynamic
+}
+
+class Multiplicity {
+	MultiplicityTypeEnum ^type
+	
+	int countMin
+	int countMax
+}
+
+
+class StructLiteralExpr extends LiteralExpr {
+	contains AttributeAssignmentExpr [] attrValues
+}
+
+class AttributeAssignmentExpr {
+	refers Attribute attribute
+	contains Expr value
+}

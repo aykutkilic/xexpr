@@ -38,4 +38,12 @@
             genModel="model/xphysical.xcore"/>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated xtype -->
+      <package
+            uri="com.kilic.xtype"
+            class="com.kilic.xtype.XtypePackage"
+            genModel="model/xtype.xcore"/>
+   </extension>
+
 </plugin>

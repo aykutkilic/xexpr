@@ -45,6 +45,7 @@ Workflow {
     	encoding = encoding
     	language = auto-inject {
     		loadedResource="platform:/resource/com.kilic.xexpr/model/xexpr.xcore"
+    		loadedResource="platform:/resource/com.kilic.xexpr/model/xtype.xcore"
     		uri = grammarURI
     
     		// Java API to access grammar elements (required by several other fragments)

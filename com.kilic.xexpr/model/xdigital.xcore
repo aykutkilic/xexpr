@@ -1,6 +1,6 @@
 package com.kilic.xdigital
 
-import com.kilic.xexpr.CoreType
+import com.kilic.xtype.CoreType
 import com.kilic.xexpr.LiteralExpr
 
 // linker scripts / endianness / volatility / etc.
