@@ -2,6 +2,8 @@ package com.kilic.xexpr
 
 import com.kilic.xtype.Type
 import com.kilic.xtype.Attribute
+import com.kilic.xtype.PhasedString
+import com.kilic.xtype.Named
 
 interface Expr {}
 
@@ -58,10 +60,9 @@ class BlockExpr extends Expr {
 	contains Expr [] exprs
 }
 
-class VarDecl extends Expr {
+class VarDecl extends Expr, Named {
 	boolean writeable
 	refers Type ^type
-	String name
 	contains Expr init
 }
 
@@ -161,7 +162,7 @@ class BooleanLiteralExpr extends LiteralExpr {
 class NullLiteralExpr extends LiteralExpr {}
 
 class CallExpr extends Expr {
-	String functionName
+	contains PhasedString functionName
 	contains Expr [] parameters
 }
 

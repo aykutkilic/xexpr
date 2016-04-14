@@ -1,6 +1,6 @@
 import com.kilic.xexpr.Expr
-import com.kilic.xexpr.Multiplicity
-import com.kilic.xexpr.Type
+import com.kilic.xtype.Multiplicity
+import com.kilic.xtype.Type
 
 system com.kilic.xexpr.semantics.Count
 

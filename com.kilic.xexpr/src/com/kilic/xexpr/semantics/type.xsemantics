@@ -1,5 +1,5 @@
 import com.kilic.xexpr.Expr
-import com.kilic.xexpr.Type
+import com.kilic.xtype.Type
 
 import com.kilic.xexpr.CastedExpr
 import com.kilic.xexpr.BinaryOperation
@@ -16,10 +16,11 @@ import com.kilic.xexpr.ReturnExpr
 import com.kilic.xexpr.NullLiteralExpr
 
 import com.kilic.xexpr.XexprFactory
+import com.kilic.xtype.XtypeFactory
 
-import com.kilic.xexpr.BooleanType
-import com.kilic.xexpr.StringType
-import com.kilic.xexpr.NumberType
+import com.kilic.xtype.BooleanType
+import com.kilic.xtype.StringType
+import com.kilic.xtype.NumberType
 
 system com.kilic.xexpr.semantics.Types
 
@@ -36,9 +37,9 @@ judgments {
 		error "Type mismatch "
 }
 
-axiom TNull    G |- NullLiteralExpr    e : XexprFactory::eINSTANCE.createNullType
-axiom TBoolean G |- BooleanLiteralExpr e : XexprFactory::eINSTANCE.createBooleanType
-axiom TString  G |- StringLiteralExpr  e : XexprFactory::eINSTANCE.createStringType
+axiom TNull    G |- NullLiteralExpr    e : XtypeFactory::eINSTANCE.createNullType
+axiom TBoolean G |- BooleanLiteralExpr e : XtypeFactory::eINSTANCE.createBooleanType
+axiom TString  G |- StringLiteralExpr  e : XtypeFactory::eINSTANCE.createStringType
 axiom TInteger G |- NumberLiteralExpr  e : utils.createNumberType(e.value)
 axiom TCasted  G |- CastedExpr         e : e.type
 
@@ -66,7 +67,7 @@ from {
 	
 		case LOGIC_AND,
 		case LOGIC_OR:
-			t = XexprFactory::eINSTANCE.createBooleanType
+			t = XtypeFactory::eINSTANCE.createBooleanType
 		
 		default: {
 			var Type left
@@ -85,7 +86,7 @@ from {
 	switch(e.operator) {
 		case LOGIC_NOT:
 			// check integer or bool
-			t = XexprFactory::eINSTANCE.createBooleanType
+			t = XtypeFactory::eINSTANCE.createBooleanType
 		
 		case BINARY_NOT,
 		case NEGATION,

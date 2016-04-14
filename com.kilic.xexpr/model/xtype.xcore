@@ -2,14 +2,33 @@ package com.kilic.xtype
 
 import com.kilic.xexpr.Expr
 import com.kilic.xexpr.LiteralExpr
+import com.kilic.xconcepts.PackageElement
+
+enum DefinitionPhase {
+	Precompile,
+	Compile,
+	Link,
+	Runtime
+}
+
+interface Phased {
+	DefinitionPhase defPhase
+}
+
+class PhasedString extends Phased {
+	String value 
+	contains Expr valueExpr
+}
+
+interface Named { contains PhasedString name }
 
 abstract class Type {}
 
 abstract class CoreType extends Type {}
 
-class NullType extends CoreType {}
+class NullType    extends CoreType {}
 class BooleanType extends CoreType {}
-class StringType extends CoreType {
+class StringType  extends CoreType {
 	int length
 }
 
@@ -18,13 +37,11 @@ abstract class NumberType extends CoreType {}
 class IntegerType extends NumberType {}
 class RealType extends NumberType {}
 
-class CompositeType extends Type {
-	String name
+class CompositeType extends Type, Named, PackageElement {
 	contains Attribute [] attributes
 }
 
-class Attribute extends Type {
-	String name
+class Attribute extends Type, Named {
 	refers Type ^type
 }
 
@@ -54,7 +71,6 @@ class Multiplicity {
 	int countMin
 	int countMax
 }
-
 
 class StructLiteralExpr extends LiteralExpr {
 	contains AttributeAssignmentExpr [] attrValues

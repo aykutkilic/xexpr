@@ -28,14 +28,14 @@ import com.kilic.xexpr.VariableRefLiteral
 import com.kilic.xexpr.UnaryOperatorEnum
 import com.kilic.xexpr.Expr
 import com.kilic.xexpr.BinaryOperatorEnum
-import com.kilic.xexpr.StringType
-import com.kilic.xexpr.NumberType
-import com.kilic.xexpr.BinaryType
-import com.kilic.xexpr.PointerType
-import com.kilic.xexpr.CompositeType
-import com.kilic.xexpr.BooleanType
-import com.kilic.xexpr.IntegerType
-import com.kilic.xexpr.RealType
+import com.kilic.xtype.StringType
+import com.kilic.xtype.NumberType
+import com.kilic.xtype.CompositeType
+import com.kilic.xtype.BooleanType
+import com.kilic.xtype.IntegerType
+import com.kilic.xtype.RealType
+import com.kilic.xdigital.BinaryType
+import com.kilic.xdigital.PointerType
 import com.kilic.xexpr.semantics.Types
 
 class Interpreter {
@@ -238,7 +238,8 @@ class Interpreter {
 			PointerType:
 				switch(rtype) {
 					BinaryType, NumberType:
-						return (lval as Integer) + sizeof(ltype.getMemoryLayout) * (rval as Integer)
+						// return (lval as Integer) + sizeof(ltype.getMemoryLayout) * (rval as Integer)
+						return (lval as Integer) + 4 * (rval as Integer)
 				}
 		}
 		
@@ -276,7 +277,8 @@ class Interpreter {
 			PointerType:
 				switch(rtype) {
 					BinaryType, IntegerType:
-						return (lval as Integer) - sizeof(ltype.getMemoryLayout) * (rval as Integer)
+						//return (lval as Integer) - sizeof(ltype.getMemoryLayout) * (rval as Integer)
+						return (lval as Integer) - 4 * (rval as Integer)
 				}
 		}
 		

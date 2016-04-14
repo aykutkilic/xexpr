@@ -6,7 +6,6 @@ package com.kilic.xmake.dsl.generator
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess
-import com.kilic.xmake.dsl.xMake.Greeting
 import com.google.inject.Inject
 import com.kilic.xexpr.interpreter.Interpreter
 
@@ -21,8 +20,7 @@ class XmakeGenerator implements IGenerator {
 	Interpreter interpreter
 	
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
-		var exprs = resource.allContents.filter(typeof(Greeting)).map[expr]
-		
-		fsa.generateFile( 'deneme.c',  exprs.map[interpreter.eval(it).toString].join(', ') )
+		//var exprs = resource.allContents.filter(typeof(Package)).map[expr]
+		//fsa.generateFile( 'deneme.c',  exprs.map[interpreter.eval(it).toString].join(', ') )
 	}
 }
