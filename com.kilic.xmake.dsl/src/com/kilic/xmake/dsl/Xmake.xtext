@@ -3,7 +3,4 @@ grammar com.kilic.xmake.dsl.Xmake with com.kilic.xexpr.dsl.Xexpr
 generate xMake "http://www.kilic.com/xmake/dsl/Xmake"
 
 Model:
-	greetings+=Greeting*;
-	
-Greeting:
-	'Hello' expr=Expr '!';
+	packages+=Package*;

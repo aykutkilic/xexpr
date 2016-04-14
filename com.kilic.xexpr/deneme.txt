@@ -1,0 +1,44 @@
+moreThan4 a @ C
+string name @ C
+type hehe @PC
+hehe someType @ C
+
+AST moreVars() @ C {}
+
+AST someOther(int x, AST other) @ PC {
+}
+
+// override the default typedef
+<deneme.someOther.x = u8>
+
+AST operator+=(RingBuffer rb, Buffer b) @ C {
+	// do ring buffer concat
+}
+
+
+// how to prove??? coq magic?
+type moreThan4 {
+	if value<=4 error "'a' must be more than 4."
+}
+
+if(a>5)
+	x=12
+else
+	x=2+a+moreVars()
+	
+
+struct s {
+	any name[12] <type=someType>;
+	someType name[12];
+	
+	someType name[12] <name += "_Deneme">;
+	someType <name+="_deneme">[12];
+	moreVars();
+}
+
+deneme() {
+	RingBuffer a;
+	a += "SomeBuffer";
+	int { value>4 } a=5
+	a-=3
+}

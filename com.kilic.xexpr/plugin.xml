@@ -38,4 +38,20 @@
             genModel="model/xphysical.xcore"/>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated xtype -->
+      <package
+            uri="com.kilic.xtype"
+            class="com.kilic.xtype.XtypePackage"
+            genModel="model/xtype.xcore"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated xconcepts -->
+      <package
+            uri="com.kilic.xconcepts"
+            class="com.kilic.xconcepts.XconceptsPackage"
+            genModel="model/xconcepts.xcore"/>
+   </extension>
+
 </plugin>

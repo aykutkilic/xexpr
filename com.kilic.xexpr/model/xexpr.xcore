@@ -1,7 +1,11 @@
 package com.kilic.xexpr
 
-interface Expr {
-}
+import com.kilic.xtype.Type
+import com.kilic.xtype.Attribute
+import com.kilic.xtype.PhasedString
+import com.kilic.xtype.Named
+
+interface Expr {}
 
 // statements
 class AssignmentExpr extends Expr {
@@ -56,10 +60,9 @@ class BlockExpr extends Expr {
 	contains Expr [] exprs
 }
 
-class VarDecl extends Expr {
+class VarDecl extends Expr, Named {
 	boolean writeable
 	refers Type ^type
-	String name
 	contains Expr init
 }
 
@@ -127,7 +130,6 @@ class ReturnExpr extends Expr {
 	contains Expr expr	
 }
 
-
 class MemberFeatureCall extends Expr {
 	boolean nullSafe
 	boolean explicitStatic
@@ -157,18 +159,16 @@ class BooleanLiteralExpr extends LiteralExpr {
 	boolean value	
 }
 
-class NullLiteralExpr extends LiteralExpr {	
-}
+class NullLiteralExpr extends LiteralExpr {}
 
 class CallExpr extends Expr {
-	String functionName
+	contains PhasedString functionName
 	contains Expr [] parameters
 }
 
 class ParenthesisExpr extends Expr {
 	contains Expr expr	
 }
-
 
 class MatrixExpr extends Expr {
 	derived int rowCount
@@ -182,55 +182,4 @@ class ListExpr extends Expr {
 
 class VariableRefLiteral extends LiteralExpr {
 	refers VarDecl ^var
-}
-
-abstract class Type {}
-
-abstract class CoreType extends Type {}
-
-class NullType extends CoreType {}
-class BooleanType extends CoreType {}
-class StringType extends CoreType {
-	int length
-}
-
-abstract class NumberType extends CoreType {}
-class IntegerType extends NumberType {}
-class RealType extends NumberType {}
-
-class CompositeType extends Type {
-	String name
-	contains Attribute [] attributes
-}
-
-class Attribute extends Type {
-	String name
-	contains Type ^type
-}
-
-class FunctionType extends Type {
-	contains Type ^return
-	contains Type[] params
-}
-
-class CollectionType {
-	contains Multiplicity ^multiplicity
-	contains Type ^type
-}
-
-enum MultiplicityTypeEnum {
-	One,
-	Optional,
-	OneOrMore,
-	Any,
-	Fixed,
-	Range,
-	Dynamic
-}
-
-class Multiplicity {
-	MultiplicityTypeEnum ^type
-	
-	int countMin
-	int countMax
 }

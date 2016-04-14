@@ -1,0 +1,24 @@
+package com.kilic.xconcepts
+
+import com.kilic.xtype.Named
+import com.kilic.xtype.Type
+import com.kilic.xexpr.Expr
+
+class Package extends Named, PackageElement {
+	contains PackageElement [] elements opposite ^package
+}
+
+interface PackageElement {
+	container Package ^package opposite elements
+}
+
+class FunctionDefinition extends Named, PackageElement {
+	contains FunctionParameter [] params
+	refers Type returnType
+	
+	contains Expr body
+}
+
+class FunctionParameter extends Named {
+	refers Type ^type	
+}
