@@ -1,6 +1,5 @@
 import com.kilic.xexpr.Expr
 import com.kilic.xtype.Type
-
 import com.kilic.xexpr.CastedExpr
 import com.kilic.xexpr.BinaryOperation
 import com.kilic.xexpr.BooleanLiteralExpr
@@ -10,16 +9,11 @@ import com.kilic.xexpr.UnaryOperation
 import com.kilic.xexpr.VarDecl
 import com.kilic.xexpr.VariableRefLiteral
 import com.kilic.xexpr.ClosureExpr
-
 import com.kilic.xexpr.MemberFeatureCall
 import com.kilic.xexpr.ReturnExpr
 import com.kilic.xexpr.NullLiteralExpr
-
-import com.kilic.xexpr.XexprFactory
 import com.kilic.xtype.XtypeFactory
-
 import com.kilic.xtype.BooleanType
-import com.kilic.xtype.StringType
 import com.kilic.xtype.NumberType
 
 system com.kilic.xexpr.semantics.Types
@@ -43,7 +37,7 @@ axiom TString  G |- StringLiteralExpr  e : XtypeFactory::eINSTANCE.createStringT
 axiom TInteger G |- NumberLiteralExpr  e : utils.createNumberType(e.value)
 axiom TCasted  G |- CastedExpr         e : e.type
 
-axiom SNumToNum   G |- NumberType t1 <: NumberType t2
+axiom SNumToNum   G |- NumberType t1 <: NumberType  t2
 axiom SBoolToNum  G |- NumberType t1 <: BooleanType t2
 
 rule SSameType 

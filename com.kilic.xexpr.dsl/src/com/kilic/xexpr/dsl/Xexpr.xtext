@@ -8,17 +8,13 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 Package:
 	'package' name=PhasedString '{'
 		elements+=PackageElement*
-	'}'
-;
+	'}';
 
 PackageElement:
-	Package | CompositeType | FunctionDefinition
-;
+	Package | CompositeType | FunctionDefinition;
 
 FunctionDefinition:
-	'def' returnType=[Type|ID] name=PhasedString '(' ')'
-;
-
+	'def' returnType=[Type|ID] name=PhasedString '(' ')';
 
 Expr returns Expr:
 	AssignmentExpr;
@@ -149,7 +145,7 @@ SwitchExpr returns Expr:
 
 CasePart:
 	{CasePart}
-	typeGuard=ID? ('case' case=Expr)? 
+	typeGuard=QualifiedName? ('case' case=Expr)? 
 		(':' body=Expr | fallThrough?=',');
 
 ForEachExpr returns Expr:
@@ -186,7 +182,7 @@ ExprOrVarDecl returns Expr:
 
 VarDecl returns Expr:
 	{VarDecl}
-	(writeable?='var'|'val') (=>(type=[Type|ID] name=PhasedString) | name=PhasedString) ('=' init=Expr)?;
+	(writeable?='var'|'val') (=>(type=[Type|QualifiedName] name=PhasedString) | name=PhasedString) ('=' init=Expr)?;
 
 PhasedString:
 	value=ID | '<#' valueExpr=Expr '#>'
@@ -221,13 +217,36 @@ AttributeAssignmentExpr:
 ReturnExpr returns Expr:
 	{ReturnExpr} 'return' (->expr=Expr)?;
 
-CompositeType:
+CompositeTypeExpr:
 	'struct' name=PhasedString '{'
-		attributes+=Attribute
+		attributes+=Attribute*
 	'}';
 
 Attribute:
-	type=[Type|ID] name=PhasedString;
+	type=TypeExpr name=PhasedString;
+
+
+// Type expressions
+TypeExpr:
+	{NoneTypeExpr}    'void' |
+	{BooleanTypeExpr} 'bool' |
+	{IntegerTypeExpr} 'int'  |
+	{RealTypeExpr}	  'real' |
+	CollectionTypeExpr       |
+	CompositeTypeExpr
+;
+
+CollectionTypeExpr:
+	elementType=TypeExpr multiplicity=Multiplicity
+;
+
+Multiplicity:
+	{MultOne} |
+	{MultOptional}  '?' |
+	{MultOneOrMore} '+' |
+	{MultAny}		'*' |
+	{MultExpr}		'[' expr=Expr ']' 	
+;
 
 QualifiedName: ID (=>'.' ID)*;
 

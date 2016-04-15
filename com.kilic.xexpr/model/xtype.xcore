@@ -22,56 +22,59 @@ class PhasedString extends Phased {
 
 interface Named { contains PhasedString name }
 
-abstract class Type {}
-
-abstract class CoreType extends Type {}
-
-class NullType    extends CoreType {}
-class BooleanType extends CoreType {}
-class StringType  extends CoreType {
-	int length
+class TypeDeclaration extends Named {
+	contains TypeExpr typeExpr
 }
 
-abstract class NumberType extends CoreType {}
+class TypeRef extends TypeExpr {
+	refers TypeDeclaration ^type
+}
 
-class IntegerType extends NumberType {}
-class RealType extends NumberType {}
+abstract class TypeExpr {}
 
-class CompositeType extends Type, Named, PackageElement {
+abstract class BuiltInTypeExpr extends TypeExpr {}
+
+class NoneTypeExpr    extends BuiltInTypeExpr {}
+class BooleanTypeExpr extends BuiltInTypeExpr {}
+class StringTypeExpr  extends BuiltInTypeExpr { int length }
+
+abstract class NumberTypeExpr extends BuiltInTypeExpr {}
+
+class IntegerTypeExpr extends NumberTypeExpr {}
+class RealTypeExpr extends NumberTypeExpr {}
+
+class CompositeTypeExpr extends TypeExpr, Named, PackageElement {
 	contains Attribute [] attributes
 }
 
-class Attribute extends Type, Named {
-	refers Type ^type
+class Attribute extends TypeExpr, Named {
+	refers TypeExpr ^type
 }
 
-class FunctionType extends Type {
-	refers Type ^return
-	refers Type[] params
+class FunctionTypeExpr extends TypeExpr {
+	refers TypeExpr ^return
+	refers TypeExpr[] params
 }
 
-class CollectionType {
+class CollectionTypeExpr extends TypeExpr {
+	refers TypeExpr elementType
 	contains Multiplicity ^multiplicity
-	contains Type ^type
 }
 
-enum MultiplicityTypeEnum {
-	One,
-	Optional,
-	OneOrMore,
-	Any,
-	Fixed,
-	Range,
-	Dynamic
+
+// multiplicity
+class Multiplicity {}
+
+class MultOne 	    extends Multiplicity {}
+class MultOptional  extends Multiplicity {}
+class MultOneOrMore extends Multiplicity {}
+class MultAny		extends Multiplicity {}
+class MultExpr		extends Multiplicity {
+	contains Expr expr
 }
 
-class Multiplicity {
-	MultiplicityTypeEnum ^type
-	
-	int countMin
-	int countMax
-}
 
+// object notation
 class StructLiteralExpr extends LiteralExpr {
 	contains AttributeAssignmentExpr [] attrValues
 }

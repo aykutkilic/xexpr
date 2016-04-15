@@ -1,6 +1,6 @@
 package com.kilic.xexpr
 
-import com.kilic.xtype.Type
+import com.kilic.xtype.TypeExpr
 import com.kilic.xtype.Attribute
 import com.kilic.xtype.PhasedString
 import com.kilic.xtype.Named
@@ -62,7 +62,7 @@ class BlockExpr extends Expr {
 
 class VarDecl extends Expr, Named {
 	boolean writeable
-	refers Type ^type
+	contains TypeExpr ^typeExpr
 	contains Expr init
 }
 
@@ -117,7 +117,7 @@ class BinaryOperation extends Expr {
 
 class CastedExpr extends Expr {
 	contains Expr target
-	refers Type ^type
+	contains TypeExpr ^typeExpr
 }
 
 class ClosureExpr extends Expr {
