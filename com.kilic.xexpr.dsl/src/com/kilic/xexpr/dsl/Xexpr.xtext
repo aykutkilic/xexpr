@@ -17,6 +17,7 @@ PackageElement:
 
 FunctionDefinition:
 	'def' returnType=[Type|ID] name=PhasedString '(' ')'
+	body=Expr
 ;
 
 
