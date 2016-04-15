@@ -6,20 +6,22 @@ import "com.kilic.xtype"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 Package:
-	'package' name=PhasedString '{'
-		elements+=PackageElement*
-	'}'
-;
+	'package' name=PhasedString
+	
+	elements+=PackageElement*;
 
 PackageElement:
-	Package | CompositeType | FunctionDefinition
-;
+	CompositeTypeExpr | TypeAlias | FunctionDefinition;
 
 FunctionDefinition:
-	'def' returnType=[Type|ID] name=PhasedString '(' ')'
-	body=Expr
+	'def' returnType=TypeExprRoot name=PhasedString 
+		'(' params+=FunctionParameter? (',' params+=FunctionParameter)* ')'
+	body=BlockExpr
 ;
 
+FunctionParameter:
+	typeExpr=TypeExprRoot name=PhasedString ('=' defaultValueExpr=Expr)?
+;
 
 Expr returns Expr:
 	AssignmentExpr;
@@ -71,7 +73,7 @@ UnaryOpExpr returns Expr:
 enum OpUnary returns UnaryOperatorEnum: LogicNot="!" | Negation="-" | Positive="+";
 
 CastedExpr returns Expr:
-	PostfixOpExpr (=>({CastedExpr.target=current} 'as') type=[Type|QualifiedName] )*;
+	PostfixOpExpr (=>({CastedExpr.target=current} 'as') typeExpr=TypeExprRoot )*;
 
 PostfixOpExpr returns Expr:
 	MemberFeatureCall =>({UnaryOperation.expr=current} operator=OpPostfix)?;
@@ -89,27 +91,26 @@ MemberFeatureCall returns Expr:
 ;
 
 PrimaryExpr returns Expr:
-	BlockExpr |
-	SwitchExpr |
+	SwitchExpr  |
 	LiteralExpr |
-	IfExpr |
+	IfExpr      |
 	ForEachExpr |
 	ForLoopExpr |
-	WhileExpr |
+	WhileExpr   |
 	DoWhileExpr |
-	ReturnExpr |
+	ReturnExpr  |
 	ParenthesisExpr	
 ;
 
 LiteralExpr returns Expr:
-	CollectionLiteral |
-	Closure |
-	BooleanLiteral |
-	NumberLiteral |
-	NullLiteral |
-	StringLiteral |
+	CollectionLiteral  |
+	Closure 		   |
+	BooleanLiteral 	   |
+	NumberLiteral      |
+	NullLiteral        |
+	StringLiteral      |
 	VariableRefLiteral |
-	ListLiteral |
+	ListLiteral        |
 	StructLiteralExpr
 ;
 
@@ -150,7 +151,7 @@ SwitchExpr returns Expr:
 
 CasePart:
 	{CasePart}
-	typeGuard=ID? ('case' case=Expr)? 
+	typeGuard=QualifiedName? ('case' case=Expr)? 
 		(':' body=Expr | fallThrough?=',');
 
 ForEachExpr returns Expr:
@@ -187,7 +188,7 @@ ExprOrVarDecl returns Expr:
 
 VarDecl returns Expr:
 	{VarDecl}
-	(writeable?='var'|'val') (=>(type=[Type|ID] name=PhasedString) | name=PhasedString) ('=' init=Expr)?;
+	(writeable?='var'|'val') (=>(^typeExpr=TypeExprRoot name=PhasedString) | name=PhasedString) ('=' init=Expr)?;
 
 PhasedString:
 	value=ID | '<#' valueExpr=Expr '#>'
@@ -222,13 +223,40 @@ AttributeAssignmentExpr:
 ReturnExpr returns Expr:
 	{ReturnExpr} 'return' (->expr=Expr)?;
 
-CompositeType:
+CompositeTypeExpr:
 	'struct' name=PhasedString '{'
-		attributes+=Attribute
+		attributes+=Attribute*
 	'}';
 
 Attribute:
-	type=[Type|ID] name=PhasedString;
+	type=TypeExprRoot name=PhasedString;
+
+
+// Type expressions
+TypeAlias: 
+	'alias' name=PhasedString '=' typeExpr=TypeExprRoot
+;
+
+TypeExprRoot returns TypeExpr:
+	CompositeTypeExpr | CollectionTypeExpr 
+;
+
+CollectionTypeExpr returns TypeExpr:
+	TypeExprLeaf (=>({CollectionTypeExpr.elementType=current} multiplicity=Multiplicity))?;
+
+TypeExprLeaf returns TypeExpr:
+	{NoneTypeExpr}    'void' |
+	{BooleanTypeExpr} 'bool' |
+	{IntegerTypeExpr} 'int'  |
+	{RealTypeExpr}	  'real'	
+;
+
+Multiplicity:
+	{MultOptional}  '?' |
+	{MultOneOrMore} '+' |
+	{MultAny}		'*' |
+	{MultExpr}		'[' expr=Expr ']' 	
+;
 
 QualifiedName: ID (=>'.' ID)*;
 

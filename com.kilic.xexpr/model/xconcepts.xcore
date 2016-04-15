@@ -1,7 +1,7 @@
 package com.kilic.xconcepts
 
 import com.kilic.xtype.Named
-import com.kilic.xtype.Type
+import com.kilic.xtype.TypeExpr
 import com.kilic.xexpr.Expr
 
 class Package extends Named, PackageElement {
@@ -14,11 +14,12 @@ interface PackageElement {
 
 class FunctionDefinition extends Named, PackageElement {
 	contains FunctionParameter [] params
-	refers Type returnType
+	contains TypeExpr returnType
 	
 	contains Expr body
 }
 
 class FunctionParameter extends Named {
-	refers Type ^type	
+	contains TypeExpr typeExpr
+	contains Expr defaultValueExpr	
 }

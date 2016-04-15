@@ -1,6 +1,5 @@
 import com.kilic.xexpr.Expr
-import com.kilic.xtype.Type
-
+import com.kilic.xtype.TypeExpr
 import com.kilic.xexpr.CastedExpr
 import com.kilic.xexpr.BinaryOperation
 import com.kilic.xexpr.BooleanLiteralExpr
@@ -10,50 +9,45 @@ import com.kilic.xexpr.UnaryOperation
 import com.kilic.xexpr.VarDecl
 import com.kilic.xexpr.VariableRefLiteral
 import com.kilic.xexpr.ClosureExpr
-
 import com.kilic.xexpr.MemberFeatureCall
 import com.kilic.xexpr.ReturnExpr
 import com.kilic.xexpr.NullLiteralExpr
-
-import com.kilic.xexpr.XexprFactory
 import com.kilic.xtype.XtypeFactory
-
-import com.kilic.xtype.BooleanType
-import com.kilic.xtype.StringType
-import com.kilic.xtype.NumberType
+import com.kilic.xtype.BooleanTypeExpr
+import com.kilic.xtype.NumberTypeExpr
 
 system com.kilic.xexpr.semantics.Types
 
 inject XexprUtils utils
 
 judgments {
-	type |- Expr e : output Type
+	type |- Expr e : output TypeExpr
 		error "Cannot Type" source e
 		
-	expect |> Expr e : Type t
+	expect |> Expr e : TypeExpr t
 		error "Expected " + t source e
 	
-	subtype |- Type t1 <: Type t2
+	subtype |- TypeExpr t1 <: TypeExpr t2
 		error "Type mismatch "
 }
 
-axiom TNull    G |- NullLiteralExpr    e : XtypeFactory::eINSTANCE.createNullType
-axiom TBoolean G |- BooleanLiteralExpr e : XtypeFactory::eINSTANCE.createBooleanType
-axiom TString  G |- StringLiteralExpr  e : XtypeFactory::eINSTANCE.createStringType
+axiom TNull    G |- NullLiteralExpr    e : XtypeFactory::eINSTANCE.createNoneTypeExpr
+axiom TBoolean G |- BooleanLiteralExpr e : XtypeFactory::eINSTANCE.createBooleanTypeExpr
+axiom TString  G |- StringLiteralExpr  e : XtypeFactory::eINSTANCE.createStringTypeExpr
 axiom TInteger G |- NumberLiteralExpr  e : utils.createNumberType(e.value)
-axiom TCasted  G |- CastedExpr         e : e.type
+axiom TCasted  G |- CastedExpr         e : e.typeExpr
 
-axiom SNumToNum   G |- NumberType t1 <: NumberType t2
-axiom SBoolToNum  G |- NumberType t1 <: BooleanType t2
+axiom SNumToNum   G |- NumberTypeExpr t1 <: NumberTypeExpr  t2
+axiom SBoolToNum  G |- NumberTypeExpr t1 <: BooleanTypeExpr t2
 
 rule SSameType 
-	G |- Type t1 <: Type t2
+	G |- TypeExpr t1 <: TypeExpr t2
 from {
 	t1.class == t2.class
 }
 
 rule TBinaryOp
-	G |- BinaryOperation e : Type t 
+	G |- BinaryOperation e : TypeExpr t 
 from {
 	switch( e.operator ) {
 		/*case ASSIGN:
@@ -67,11 +61,11 @@ from {
 	
 		case LOGIC_AND,
 		case LOGIC_OR:
-			t = XtypeFactory::eINSTANCE.createBooleanType
+			t = XtypeFactory::eINSTANCE.createBooleanTypeExpr
 		
 		default: {
-			var Type left
-			var Type right
+			var TypeExpr left
+			var TypeExpr right
 			{G |- e.left  :  left}
 			{G |- e.right :  right}
 			{G |- left    <: right}
@@ -81,12 +75,12 @@ from {
 }
 
 rule TUnaryOp
-	G |- UnaryOperation e : Type t
+	G |- UnaryOperation e : TypeExpr t
 from {
 	switch(e.operator) {
 		case LOGIC_NOT:
 			// check integer or bool
-			t = XtypeFactory::eINSTANCE.createBooleanType
+			t = XtypeFactory::eINSTANCE.createBooleanTypeExpr
 		
 		case BINARY_NOT,
 		case NEGATION,
@@ -99,35 +93,35 @@ from {
 }
 
 rule TVariableRef
-	G |- VariableRefLiteral e : Type t
+	G |- VariableRefLiteral e : TypeExpr t
 from {
 	{ G |- e.^var : t }
 }
 
 rule TVarDecl
-	G |- VarDecl e : Type t
+	G |- VarDecl e : TypeExpr t
 from {
 	if( e.type != null ) { 
-		t = e.type // expect init
+		t = e.typeExpr // expect init
 	} else if(e.init != null) {
 		{ G |- e.init : t }
 	}
 }
 
 rule TMember  
-	G |- MemberFeatureCall  e : Type t 
+	G |- MemberFeatureCall  e : TypeExpr t 
 from {
 	t = e.^feature.getType // multiplicity not checked
 }
 
 rule TClosure
-	G |- ClosureExpr e : Type t
+	G |- ClosureExpr e : TypeExpr t
 from {
 	G |- e.body : t
 }
 
 rule TReturn
-	G |- ReturnExpr e : Type t
+	G |- ReturnExpr e : TypeExpr t
 from {
 	G |- e.expr : t
 }

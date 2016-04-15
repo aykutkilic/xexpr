@@ -1,6 +1,6 @@
 import com.kilic.xexpr.Expr
 import com.kilic.xtype.Multiplicity
-import com.kilic.xtype.Type
+import com.kilic.xtype.TypeExpr
 
 system com.kilic.xexpr.semantics.Count
 
@@ -10,7 +10,7 @@ judgments {
 	count ||- Expr e : output Integer
 		error "Cannot count" source e
 		
-	expectCount ||> Expr e : Type t
+	expectCount ||> Expr e : TypeExpr t
 		error "Expected # " + t source e
 		
 	multiplicity ||- Integer i <: Multiplicity m

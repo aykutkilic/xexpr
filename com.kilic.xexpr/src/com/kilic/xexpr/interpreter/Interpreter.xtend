@@ -28,15 +28,15 @@ import com.kilic.xexpr.VariableRefLiteral
 import com.kilic.xexpr.UnaryOperatorEnum
 import com.kilic.xexpr.Expr
 import com.kilic.xexpr.BinaryOperatorEnum
-import com.kilic.xtype.StringType
-import com.kilic.xtype.NumberType
-import com.kilic.xtype.CompositeType
-import com.kilic.xtype.BooleanType
-import com.kilic.xtype.IntegerType
-import com.kilic.xtype.RealType
-import com.kilic.xdigital.BinaryType
-import com.kilic.xdigital.PointerType
+import com.kilic.xdigital.BinaryTypeExpr
+import com.kilic.xdigital.PointerTypeExpr
 import com.kilic.xexpr.semantics.Types
+import com.kilic.xtype.StringTypeExpr
+import com.kilic.xtype.IntegerTypeExpr
+import com.kilic.xtype.NumberTypeExpr
+import com.kilic.xtype.BooleanTypeExpr
+import com.kilic.xtype.RealTypeExpr
+import com.kilic.xtype.CompositeTypeExpr
 
 class Interpreter {
 	@Inject protected Types types;
@@ -198,46 +198,46 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			StringType:	
+			StringTypeExpr:	
 				switch(rtype) {
-					BinaryType,  NumberType, StringType, PointerType: 
+					BinaryTypeExpr,  NumberTypeExpr, StringTypeExpr, PointerTypeExpr: 
 						return lval as String + rval.toString
 				}
 			
-			BinaryType,
-			IntegerType:
+			BinaryTypeExpr,
+			IntegerTypeExpr:
 				switch(rtype) {
-					BooleanType:
+					BooleanTypeExpr:
 						return lval as Integer + if(rval as Boolean) 1 else 0
 						
-					BinaryType, IntegerType, PointerType:
+					BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 						return lval as Integer + rval as Integer
 
-					RealType:
+					RealTypeExpr:
 						return lval as Integer + rval as Double
 												
-					StringType:
+					StringTypeExpr:
 						return lval.toString + rval as String
 				}
 			
-			RealType:
+			RealTypeExpr:
 				switch(rtype) {
-					BooleanType:
+					BooleanTypeExpr:
 						return lval as Double + if(rval as Boolean) 1 else 0
 						
-					BinaryType, IntegerType, PointerType:
+					BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 						return lval as Double + rval as Integer
 					
-					RealType:
+					RealTypeExpr:
 						return lval as Double - rval as Double
 						
-					StringType:
+					StringTypeExpr:
 						return lval.toString + rval as String
 				}
 			
-			PointerType:
+			PointerTypeExpr:
 				switch(rtype) {
-					BinaryType, NumberType:
+					BinaryTypeExpr, NumberTypeExpr:
 						// return (lval as Integer) + sizeof(ltype.getMemoryLayout) * (rval as Integer)
 						return (lval as Integer) + 4 * (rval as Integer)
 				}
@@ -256,27 +256,27 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType, IntegerType:
+			BinaryTypeExpr, IntegerTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType, PointerType:
+					BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 						return lval as Integer - rval as Integer
 						
-					RealType:
+					RealTypeExpr:
 						return lval as Integer - rval as Double
 				}
 			
-			RealType:
+			RealTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType, PointerType:
+					BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 						return lval as Double - rval as Integer
 						
-					RealType:
+					RealTypeExpr:
 						return lval as Double - rval as Double
 				}
 				
-			PointerType:
+			PointerTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType:
+					BinaryTypeExpr, IntegerTypeExpr:
 						//return (lval as Integer) - sizeof(ltype.getMemoryLayout) * (rval as Integer)
 						return (lval as Integer) - 4 * (rval as Integer)
 				}
@@ -293,9 +293,9 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType, NumberType:
+			BinaryTypeExpr, NumberTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType:
+					BinaryTypeExpr, IntegerTypeExpr:
 						return lval as Integer * rval as Integer 
 				}
 		}
@@ -311,21 +311,21 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType, IntegerType:
+			BinaryTypeExpr, IntegerTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType:
+					BinaryTypeExpr, IntegerTypeExpr:
 						return lval as Integer / rval as Integer
 					
-					RealType:
+					RealTypeExpr:
 						return lval as Integer / rval as Double
 				}
 				
-			RealType:
+			RealTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType:
+					BinaryTypeExpr, IntegerTypeExpr:
 						return lval as Double / rval as Integer
 						
-					RealType:
+					RealTypeExpr:
 						return lval as Double / rval as Double
 				}
 		}
@@ -341,9 +341,9 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType:
+			BinaryTypeExpr:
 				switch(rtype) {
-					BinaryType:
+					BinaryTypeExpr:
 						return (lval as Integer).bitwiseAnd( rval as Integer )
 				}
 		}
@@ -359,9 +359,9 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType:
+			BinaryTypeExpr:
 				switch(rtype) {
-					BinaryType:
+					BinaryTypeExpr:
 						return (lval as Integer).bitwiseOr( rval as Integer )
 				}
 		}
@@ -377,9 +377,9 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType:
+			BinaryTypeExpr:
 				switch(rtype) {
-					IntegerType:
+					IntegerTypeExpr:
 						return (lval as Integer) >> (rval as Integer)
 				}
 		}
@@ -395,9 +395,9 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType:
+			BinaryTypeExpr:
 				switch(rtype) {
-					IntegerType:
+					IntegerTypeExpr:
 						return (lval as Integer) << (rval as Integer)
 				}
 		}
@@ -413,20 +413,20 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			IntegerType, BinaryType:
+			IntegerTypeExpr, BinaryTypeExpr:
 				switch(rtype) {
-					IntegerType, BinaryType:
+					IntegerTypeExpr, BinaryTypeExpr:
 						return (lval as Integer) % (rval as Integer)
-					RealType:
+					RealTypeExpr:
 						return (lval as Double) % (rval as Double)
 				}
 				
-			RealType:
+			RealTypeExpr:
 				return (lval as Double) % (rval as Double)
 				
-			StringType:
+			StringTypeExpr:
 				switch(rtype) {
-					StringType:
+					StringTypeExpr:
 						return (lval as String).split(rval as String)
 				}
 		}
@@ -442,21 +442,21 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType, IntegerType, PointerType:
+			BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType, PointerType:
+					BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 						return (lval as Integer) == (rval as Integer)
 				}
 				
-			RealType:
+			RealTypeExpr:
 				switch(rtype) {
-					case BinaryType, IntegerType, PointerType, RealType:
+					case BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr, RealTypeExpr:
 						return (lval as Double) == (rval as Double)					
 				}
 				
-			StringType:
+			StringTypeExpr:
 				switch(rtype) {
-					StringType:
+					StringTypeExpr:
 						return (lval as String).equals((rval as String))
 				}
 		}
@@ -483,15 +483,15 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType, IntegerType, PointerType:
+			BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType, PointerType:
+					BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 						return (lval as Integer) > (rval as Integer)
 				}
 				
-			RealType:
+			RealTypeExpr:
 				switch(rtype) {
-					case BinaryType, IntegerType, PointerType, RealType:
+					case BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr, RealTypeExpr:
 						return (lval as Double) > (rval as Double)					
 				}
 		}
@@ -507,15 +507,15 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BinaryType, IntegerType, PointerType:
+			BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 				switch(rtype) {
-					BinaryType, IntegerType, PointerType:
+					BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr:
 						return (lval as Integer) < (rval as Integer)
 				}
 				
-			RealType:
+			RealTypeExpr:
 				switch(rtype) {
-					case BinaryType, IntegerType, PointerType, RealType:
+					case BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr, RealTypeExpr:
 						return (lval as Double) < (rval as Double)					
 				}
 		}
@@ -553,9 +553,9 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BooleanType:
+			BooleanTypeExpr:
 				switch(rtype) {
-					BooleanType:
+					BooleanTypeExpr:
 						return (lval as Boolean) && (rval as Boolean)					
 				}	
 		}
@@ -571,9 +571,9 @@ class Interpreter {
 		var rval = right.eval
 		
 		switch(ltype) {
-			BooleanType:
+			BooleanTypeExpr:
 				switch(rtype) {
-					BooleanType:
+					BooleanTypeExpr:
 						return (lval as Boolean) || (rval as Boolean)
 				}	
 		}
@@ -584,10 +584,10 @@ class Interpreter {
 	def dispatch eval(CastedExpr expr) {
 		val value = expr.target.eval
 		
-		switch(expr.type) {
-			BinaryType, IntegerType, PointerType: return value as Integer
-			StringType: return value as String
-			RealType: return value as Double
+		switch(expr.typeExpr) {
+			BinaryTypeExpr, IntegerTypeExpr, PointerTypeExpr: return value as Integer
+			StringTypeExpr: return value as String
+			RealTypeExpr: return value as Double
 			
 		}
 	}
@@ -611,8 +611,8 @@ class Interpreter {
 	def dispatch eval(NumberLiteralExpr expr) {
 		var type = types.type(expr).value
 		switch(type) {
-			IntegerType: return Integer.parseInt(expr.value)
-			RealType: return Double.parseDouble(expr.value)
+			IntegerTypeExpr: return Integer.parseInt(expr.value)
+			RealTypeExpr: return Double.parseDouble(expr.value)
 		}
 		
 		throw new Exception('''Error - unrecognised number literal type «type.toString»''')
@@ -636,15 +636,15 @@ class Interpreter {
 	def dispatch eval(VariableRefLiteral expr) {
 	}
 	
-	def dispatch int sizeof(CompositeType t) {
+	def dispatch int sizeof(CompositeTypeExpr t) {
 		return 1;		
 	}
 	
-	def dispatch int sizeof(StringType t) {
+	def dispatch int sizeof(StringTypeExpr t) {
 		return 1;
 	}
 	
-	def dispatch int sizeof(PointerType t) {
+	def dispatch int sizeof(PointerTypeExpr t) {
 		return 1;
 	}
 }
