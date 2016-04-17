@@ -3,7 +3,7 @@
  */
 package com.kilic.xexpr.dsl.ui.labeling
 
-//import org.eclipse.xtext.resource.IEObjectDescription
+import org.eclipse.xtext.resource.IEObjectDescription
 
 /**
  * Provides labels for IEObjectDescriptions and IResourceDescriptions.
@@ -14,9 +14,9 @@ class XexprDescriptionLabelProvider extends org.eclipse.xtext.ui.label.DefaultDe
 
 	// Labels and icons can be computed like this:
 	
-//	override text(IEObjectDescription ele) {
-//		ele.name.toString
-//	}
+	override text(IEObjectDescription ele) {
+		ele.name.toString
+	}
 //	 
 //	override image(IEObjectDescription ele) {
 //		ele.EClass.name + '.gif'

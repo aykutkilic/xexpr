@@ -188,7 +188,7 @@ ExprOrVarDecl returns Expr:
 
 VarDecl returns Expr:
 	{VarDecl}
-	(writeable?='var'|'val') (=>(^typeExpr=TypeExprRoot name=PhasedString) | name=PhasedString) ('=' init=Expr)?;
+	(writeable?='var'|'val') (=>(typeExpr=TypeExprRoot name=PhasedString) | name=PhasedString) ('=' init=Expr)?;
 
 PhasedString:
 	value=ID | '<#' valueExpr=Expr '#>'
@@ -248,7 +248,9 @@ TypeExprLeaf returns TypeExpr:
 	{NoneTypeExpr}    'void' |
 	{BooleanTypeExpr} 'bool' |
 	{IntegerTypeExpr} 'int'  |
-	{RealTypeExpr}	  'real'	
+	{RealTypeExpr}	  'real' |
+
+	{TypeRef}		  type = [TypeDeclaration|QualifiedName]	
 ;
 
 Multiplicity:

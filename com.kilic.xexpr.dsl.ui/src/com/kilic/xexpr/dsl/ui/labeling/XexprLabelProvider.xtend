@@ -3,6 +3,8 @@
  */
 package com.kilic.xexpr.dsl.ui.labeling
 
+import com.kilic.xconcepts.Package
+
 import com.google.inject.Inject
 
 /**
@@ -17,7 +19,14 @@ class XexprLabelProvider extends org.eclipse.xtext.ui.label.DefaultEObjectLabelP
 		super(delegate);
 	}
 
+	override protected convertToString(Object text) {
+		super.convertToString(text)
+	}
+	
 	// Labels and icons can be computed like this:
+	def text(Package p) {
+		p.name.value
+	}
 	
 //	def text(Greeting ele) {
 //		'A greeting to ' + ele.name

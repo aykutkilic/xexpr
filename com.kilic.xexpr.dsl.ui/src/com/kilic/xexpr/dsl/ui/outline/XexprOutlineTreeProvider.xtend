@@ -3,11 +3,42 @@
  */
 package com.kilic.xexpr.dsl.ui.outline
 
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EStructuralFeature
+import org.eclipse.swt.graphics.Image
+import org.eclipse.xtext.ui.editor.outline.IOutlineNode
+import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
+import com.kilic.xconcepts.Package
+import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
+import org.eclipse.xtext.ui.editor.outline.impl.EStructuralFeatureNode
+
 /**
  * Customization of the default outline structure.
  *
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#outline
  */
-class XexprOutlineTreeProvider extends org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider {
+class XexprOutlineTreeProvider extends DefaultOutlineTreeProvider {
+
+	/*override protected _createChildren(IOutlineNode parentNode, EObject modelElement) {
+		super._createChildren(parentNode, modelElement)
+	}*/
+
+	def protected _createChildren(DocumentRootNode parentNode, Package p) {
+		p.elements.forEach[ createNode(parentNode, it) ]
+	}
+
+	override protected _createNode(IOutlineNode parentNode, EObject modelElement) {
+		super._createNode( parentNode, modelElement )
+	}
 	
+	override protected _createChildren(IOutlineNode parentNode, EObject modelElement) {
+		val nameFeature = modelElement.eClass().getEStructuralFeature("name");
+		
+		if(nameFeature != null) {
+			return
+		}
+		
+		super._createChildren(parentNode, modelElement)
+	}
+		
 }
